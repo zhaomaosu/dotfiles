@@ -108,14 +108,14 @@ PS2=$'%{\033[2m%}%_>%{\033[0m%} '
 # RPS1="%(1j.%{${E}[1;33m%}%j .)%{${E}[m%}%T"
 
 # vim vicmd/viins 提示
-function zle-line-init zle-keymap-select {
-    RPS1="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
-    RPS2=$RPS1
-    zle reset-prompt
-}
-
-zle -N zle-line-init
-zle -N zle-keymap-select
+#function zle-line-init zle-keymap-select {
+#    RPS1="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
+#    RPS2=$RPS1
+#    zle reset-prompt
+#}
+#
+#zle -N zle-line-init
+#zle -N zle-keymap-select
 
 bindkey "\C-l" clear-screen
 bindkey "\C-u" backward-kill-line
@@ -133,14 +133,14 @@ export KEYTIMEOUT=1
 alias l='ls --color=auto'
 alias ls='ls --color=auto'
 alias ll='ls -ahlF --color=always'
-alias vim=nvim
+# alias vim=nvim
 alias vi='vim'
 
 # set proxy
-export all_proxy=child-prc.intel.com:913
-export http_proxy=child-prc.intel.com:913
-export https_proxy=child-prc.intel.com:913
-export ftp_proxy=child-prc.intel.com:913
+# export all_proxy=child-prc.intel.com:913
+# export http_proxy=child-prc.intel.com:913
+# export https_proxy=child-prc.intel.com:913
+# export ftp_proxy=child-prc.intel.com:913
 
 # set default editor
-export EDITOR=/usr/local/bin/nvim
+# export EDITOR=nvim

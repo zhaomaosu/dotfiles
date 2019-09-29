@@ -1,0 +1,10 @@
+:80 {
+    log /var/www/sugars.xyz/caddy.log
+    root /var/www/sugars.xyz
+    tls off
+    index index.html
+    proxy /maosu localhost:30030 {
+        websocket
+        header_upstream -Origin
+    }
+}

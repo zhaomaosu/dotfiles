@@ -32,6 +32,10 @@ filetype off
 
 filetype plugin indent on
 
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+
 set autoread
 set completeopt=preview,menu
 set cursorline

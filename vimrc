@@ -1,39 +1,46 @@
 set nocompatible
-filetype off
 
-" Vundle configuration
-"set rtp+=~/.vim/bundle/Vundle.vim
-"call vundle#begin()
-"
-"" taglist插件配置
-"Plugin 'vim-scripts/taglist.vim'
-"" 让taglist窗口出现在Vim的左边
-"let Tlist_Use_Right_Window = 1
-"" 可使taglist只显示当前文件tag，其它文件的tag都被折叠起来
-"let Tlist_File_Fold_Auto_Close = 1
-"" 只显示一个文件中的tag，默认为显示多个
-"let Tlist_Show_One_File = 1
-"" Taglist窗口打开时，立刻切换为有焦点状态
-"let Tlist_GainFocus_On_ToggleOpen = 1
-"" 如果taglist窗口是最后一个窗口，则退出vim
-"let Tlist_Exit_OnlyWindow = 1
-"" 设置窗体宽度，可以根据自己喜好设置
-"let Tlist_WinWidth = 30
-"" 热键设置
-"map <F3> :TlistToggle<CR>
-"
-"Plugin 'VundleVim/Vundle.vim'
-"
-"Plugin 'scrooloose/nerdtree'
-"map <F2> :NERDTreeToggle<CR>
-"let NERDTreeWinSize=30
-"
-"call vundle#end()
+call plug#begin('~/.config/nvim/plugged')
+
+" -- nerdtree
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+
+" -- auto-pairs
+Plug 'jiangmiao/auto-pairs'
+let b:AutoPairs = {"(":")","{":"}","[":"]"}
+let g:AutoPairsFlyMode = 0
+let g:AutoPairsMultilineClose = 0
+let g:AutoPairsSmartMode = 1
+let g:AutoPairsMapCh = 0
+
+" -- vim-lsp-cxx-highlight
+Plug 'jackguo380/vim-lsp-cxx-highlight'
+let g:lsp_cxx_hl_use_text_props = 1
+
+" -- LanguageClient & ccls
+Plug 'autozimu/LanguageClient-neovim', { 
+            \ 'branch': 'next', 
+            \ 'do': 'bash install.sh', 
+            \ }
+let s:ccls_settings = {
+            \ 'highlight':{ 'lsRanges' : v:true },
+            \ }
+let s:ccls_command = ['ccls', '-init=' . json_encode(s:ccls_settings), '--log-file=/tmp/ccls.ms.log']
+let g:LanguageClient_serverCommands = {
+    \ 'c': s:ccls_command,
+    \ 'cpp': s:ccls_command,
+    \ 'objc': s:ccls_command,
+    \ }
+let g:LanguageClient_loadSettings = 1
+let g:LanguageClient_settingsPath = expand('~/.config/nvim/ccls_settings.json')
+set completefunc=LanguageClient#complete
+
+call plug#end()
 
 filetype plugin indent on
 
 if has("autocmd")
-  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif 
 endif
 
 set autoread
@@ -47,4 +54,12 @@ set softtabstop=4
 set shiftwidth=4
 set expandtab
 set smarttab
+set mouse=a
 set number
+set modelineexpr
+" -- set themes --
+if (has("termguicolors"))
+    set termguicolors
+endif
+syntax enable
+colorscheme OceanicNext

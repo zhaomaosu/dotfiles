@@ -17,6 +17,10 @@ let g:AutoPairsMapCh = 0
 Plug 'jackguo380/vim-lsp-cxx-highlight'
 let g:lsp_cxx_hl_use_text_props = 1
 
+" -- deoplete
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+let g:deoplete#enable_at_startup = 1
+
 " -- LanguageClient & ccls
 Plug 'autozimu/LanguageClient-neovim', { 
             \ 'branch': 'next', 

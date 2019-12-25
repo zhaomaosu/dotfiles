@@ -4,7 +4,6 @@ HISTSIZE=3000
 SAVEHIST=3000
 setopt appendhistory autocd extendedglob nonomatch notify
 unsetopt beep
-bindkey -v
 # End of lines configured by zsh-newuser-install
 # The following lines were added by compinstall
 zstyle :compinstall filename '/home/maosuzha/.zshrc'
@@ -104,29 +103,18 @@ compdef watch=command
 PS1=$'%{\033[38;5;39m%}%n%{\033[38;5;15m%}@%{\033[38;5;112m%}%M %{\033[38;5;160m%}%1~%{\033[38;5;75m%}$%{\033[0m%} '
 # 次提示符：使用暗色
 PS2=$'%{\033[2m%}%_>%{\033[0m%} '
-# 右边的提示
-# RPS1="%(1j.%{${E}[1;33m%}%j .)%{${E}[m%}%T"
 
-# vim vicmd/viins 提示
-#function zle-line-init zle-keymap-select {
-#    RPS1="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
-#    RPS2=$RPS1
-#    zle reset-prompt
-#}
-#
-#zle -N zle-line-init
-#zle -N zle-keymap-select
-
-bindkey "\C-l" clear-screen
-bindkey "\C-u" backward-kill-line
-bindkey -M viins "\e[Z" reverse-menu-complete
-bindkey -M viins TAB menu-expand-or-complete
-bindkey -M viins '^?' backward-delete-char
-bindkey -M viins "^R" history-incremental-search-backward
-bindkey -M viins "^S" history-incremental-search-forward
-bindkey -M viins "^_" undo
-bindkey -r '\e,'
-bindkey -r '\e/'
+# set bindkey
+bindkey -e
+if [[ -n "$TMUX" ]]; then
+    bindkey "^[[1~" beginning-of-line
+    bindkey "^[[4~" end-of-line
+else
+    bindkey "^[[H" beginning-of-line
+    bindkey "^[[F" end-of-line
+fi
+bindkey "^[J" backward-word
+bindkey "^[K" backward-word
 
 export KEYTIMEOUT=1
 

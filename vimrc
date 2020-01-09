@@ -2,6 +2,10 @@ set nocompatible
 
 call plug#begin('~/.config/nvim/plugged')
 
+" -- rainbow 
+Plug 'luochen1990/rainbow'
+let g:rainbow_active = 1
+
 " -- nerdtree
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 
@@ -13,13 +17,13 @@ let g:AutoPairsMultilineClose = 0
 let g:AutoPairsSmartMode = 1
 let g:AutoPairsMapCh = 0
 
-" -- vim-lsp-cxx-highlight
-Plug 'jackguo380/vim-lsp-cxx-highlight'
-let g:lsp_cxx_hl_use_text_props = 1
-
 " -- deoplete
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 let g:deoplete#enable_at_startup = 1
+
+" -- vim-lsp-cxx-highlight
+Plug 'jackguo380/vim-lsp-cxx-highlight'
+let g:lsp_cxx_hl_use_text_props = 1
 
 " -- LanguageClient & ccls
 Plug 'autozimu/LanguageClient-neovim', { 

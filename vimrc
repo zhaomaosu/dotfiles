@@ -1,13 +1,14 @@
 set nocompatible
+filetype indent off
 
 call plug#begin('~/.config/nvim/plugged')
 
-" -- rainbow 
+" -- rainbow
 Plug 'luochen1990/rainbow'
 let g:rainbow_active = 1
 
 " -- nerdtree
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
 " -- auto-pairs
 Plug 'jiangmiao/auto-pairs'
@@ -17,31 +18,37 @@ let g:AutoPairsMultilineClose = 0
 let g:AutoPairsSmartMode = 1
 let g:AutoPairsMapCh = 0
 
-" -- deoplete
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-let g:deoplete#enable_at_startup = 1
-
 " -- vim-lsp-cxx-highlight
 Plug 'jackguo380/vim-lsp-cxx-highlight'
 let g:lsp_cxx_hl_use_text_props = 1
+hi default LspCxxHlGroupEnumConstant ctermfg=176
+hi default LspCxxHlGroupNamespace ctermfg=136
+hi default LspCxxHlGroupMemberVariable ctermfg=81
 
-" -- LanguageClient & ccls
-Plug 'autozimu/LanguageClient-neovim', { 
-            \ 'branch': 'next', 
-            \ 'do': 'bash install.sh', 
-            \ }
-let s:ccls_settings = {
-            \ 'highlight':{ 'lsRanges' : v:true },
-            \ }
-let s:ccls_command = ['ccls', '-init=' . json_encode(s:ccls_settings), '--log-file=/tmp/ccls.ms.log']
-let g:LanguageClient_serverCommands = {
-    \ 'c': s:ccls_command,
-    \ 'cpp': s:ccls_command,
-    \ 'objc': s:ccls_command,
-    \ }
-let g:LanguageClient_loadSettings = 1
-let g:LanguageClient_settingsPath = expand('~/.config/nvim/ccls_settings.json')
-set completefunc=LanguageClient#complete
+" -- coc & ccls
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+set updatetime=300
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gr <Plug>(coc-references)
+nmap <silent> rn <Plug>(coc-rename)
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+nn <silent> gxb :call CocLocations('ccls','$ccls/inheritance')<cr>
+nn <silent> gxB :call CocLocations('ccls','$ccls/inheritance',{'levels':3})<cr>
+nn <silent> gxd :call CocLocations('ccls','$ccls/inheritance',{'derived':v:true})<cr>
+nn <silent> gxD :call CocLocations('ccls','$ccls/inheritance',{'derived':v:true,'levels':3})<cr>
+nn <silent> gxc :call CocLocations('ccls','$ccls/call')<cr>
+nn <silent> gxC :call CocLocations('ccls','$ccls/call',{'callee':v:true})<cr>
+nn <silent> gxm :call CocLocations('ccls','$ccls/member')<cr>
+nn <silent> gxf :call CocLocations('ccls','$ccls/member',{'kind':3})<cr>
+nn <silent> gxs :call CocLocations('ccls','$ccls/member',{'kind':2})<cr>
+nn <silent> gxv :call CocLocations('ccls','$ccls/vars')<cr>
+nn <silent> gxV :call CocLocations('ccls','$ccls/vars',{'kind':1})<cr>
+
+nn <silent><buffer> <C-l> :call CocLocations('ccls','$ccls/navigate',{'direction':'D'})<cr>
+nn <silent><buffer> <C-k> :call CocLocations('ccls','$ccls/navigate',{'direction':'L'})<cr>
+nn <silent><buffer> <C-j> :call CocLocations('ccls','$ccls/navigate',{'direction':'R'})<cr>
+nn <silent><buffer> <C-h> :call CocLocations('ccls','$ccls/navigate',{'direction':'U'})<cr>
 
 call plug#end()
 
@@ -65,9 +72,4 @@ set smarttab
 set mouse=a
 set number
 set modelineexpr
-" -- set themes --
-if (has("termguicolors"))
-    set termguicolors
-endif
-syntax enable
-colorscheme OceanicNext
+colorscheme oct22 

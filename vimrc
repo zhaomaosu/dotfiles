@@ -25,30 +25,25 @@ hi default LspCxxHlGroupEnumConstant ctermfg=176
 hi default LspCxxHlGroupNamespace ctermfg=136
 hi default LspCxxHlGroupMemberVariable ctermfg=81
 
-" -- coc & ccls
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-set updatetime=300
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gr <Plug>(coc-references)
-nmap <silent> rn <Plug>(coc-rename)
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-nn <silent> gxb :call CocLocations('ccls','$ccls/inheritance')<cr>
-nn <silent> gxB :call CocLocations('ccls','$ccls/inheritance',{'levels':3})<cr>
-nn <silent> gxd :call CocLocations('ccls','$ccls/inheritance',{'derived':v:true})<cr>
-nn <silent> gxD :call CocLocations('ccls','$ccls/inheritance',{'derived':v:true,'levels':3})<cr>
-nn <silent> gxc :call CocLocations('ccls','$ccls/call')<cr>
-nn <silent> gxC :call CocLocations('ccls','$ccls/call',{'callee':v:true})<cr>
-nn <silent> gxm :call CocLocations('ccls','$ccls/member')<cr>
-nn <silent> gxf :call CocLocations('ccls','$ccls/member',{'kind':3})<cr>
-nn <silent> gxs :call CocLocations('ccls','$ccls/member',{'kind':2})<cr>
-nn <silent> gxv :call CocLocations('ccls','$ccls/vars')<cr>
-nn <silent> gxV :call CocLocations('ccls','$ccls/vars',{'kind':1})<cr>
-
-nn <silent><buffer> <C-l> :call CocLocations('ccls','$ccls/navigate',{'direction':'D'})<cr>
-nn <silent><buffer> <C-k> :call CocLocations('ccls','$ccls/navigate',{'direction':'L'})<cr>
-nn <silent><buffer> <C-j> :call CocLocations('ccls','$ccls/navigate',{'direction':'R'})<cr>
-nn <silent><buffer> <C-h> :call CocLocations('ccls','$ccls/navigate',{'direction':'U'})<cr>
+" -- vim-lsp    
+Plug 'prabirshrestha/vim-lsp'    
+if executable('ccls')    
+   au User lsp_setup call lsp#register_server({    
+      \ 'name': 'ccls',    
+      \ 'cmd': {server_info->['ccls']},    
+      \ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'compile_commands.json'))},    
+      \ 'initialization_options': {    
+      \   'cache': {'directory': '/tmp/ccls/cache' },    
+      \   'highlight': { 'lsRanges' : v:true },    
+      \ },    
+      \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cc'],    
+      \ })    
+endif    
+    
+" Key bindings for vim-lsp.    
+nn <silent> gd :LspDefinition<cr>    
+nn <silent> gr :LspReferences<cr>    
+nn <silent> rn :LspRename<cr>
 
 call plug#end()
 
@@ -72,4 +67,4 @@ set smarttab
 set mouse=a
 set number
 set modelineexpr
-colorscheme oct22 
+colorscheme OceanicNext 

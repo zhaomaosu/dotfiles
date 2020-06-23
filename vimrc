@@ -28,33 +28,30 @@ hi default LspCxxHlGroupEnumConstant ctermfg=176
 hi default LspCxxHlGroupNamespace ctermfg=136
 hi default LspCxxHlGroupMemberVariable ctermfg=81
 
-" -- LanguageClient
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
+" -- vim-lsp
+Plug 'prabirshrestha/vim-lsp'
+if executable('ccls')
+   au User lsp_setup call lsp#register_server({
+      \ 'name': 'ccls',
+      \ 'cmd': {server_info->['ccls']},
+      \ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'compile_commands.json'))},
+      \ 'initialization_options': {
+      \     'cache': {'directory': '.ccls_cache' },
+      \     'highlight': { 'lsRanges' : v:true },
+      \ },
+      \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cc'],
+      \ })
+endif
 
-let g:LanguageClient_serverCommands = {
-    \ 'c': ['ccls', '--log-file=/tmp/cc.log'],
-    \ 'cpp': ['ccls', '--log-file=/tmp/cc.log'],
-    \ 'objc': ['ccls', '--log-file=/tmp/cc.log'],
-    \ }
+let g:lsp_highlight_references_enabled = 1
 
-let g:LanguageClient_loadSettings = 1 " Use an absolute configuration path if you want system-wide settings
-let g:LanguageClient_settingsPath = '/home/maosuzha/.config/nvim/settings.json'
-
-nn <silent> gd :call LanguageClient#textDocument_definition()<cr>
-nn <silent> gr :call LanguageClient#textDocument_references({'includeDeclaration': v:false})<cr>
-nn <silent> K :call LanguageClient#textDocument_hover()<cr>
+nn <silent> gd :LspDefinition<cr>
+nn <silent> gr :LspReferences<cr>
+nn <f2> :LspRename<cr>
 
 " -- deoplete & echodoc
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins'  }
 let g:deoplete#enable_at_startup = 1
-
-Plug 'Shougo/echodoc.vim'
-" Or, you could use neovim's floating text feature.
-set noshowmode
-let g:echodoc#enable_at_startup = 1
 
 call plug#end()
 

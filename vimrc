@@ -28,30 +28,16 @@ hi default LspCxxHlGroupEnumConstant ctermfg=176
 hi default LspCxxHlGroupNamespace ctermfg=136
 hi default LspCxxHlGroupMemberVariable ctermfg=81
 
-" -- vim-lsp
-Plug 'prabirshrestha/vim-lsp'
-if executable('ccls')
-   au User lsp_setup call lsp#register_server({
-      \ 'name': 'ccls',
-      \ 'cmd': {server_info->['ccls']},
-      \ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'compile_commands.json'))},
-      \ 'initialization_options': {
-      \     'cache': {'directory': '.ccls_cache' },
-      \     'highlight': { 'lsRanges' : v:true },
-      \ },
-      \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cc'],
-      \ })
-endif
+" --coc.nvim
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-let g:lsp_highlight_references_enabled = 1
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gr <Plug>(coc-references)
+nn <silent> K :call CocActionAsync('doHover')<cr>
 
-nn <silent> gd :LspDefinition<cr>
-nn <silent> gr :LspReferences<cr>
-nn <f2> :LspRename<cr>
-
-" -- deoplete & echodoc
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins'  }
-let g:deoplete#enable_at_startup = 1
+set updatetime=300
+au CursorHold * sil call CocActionAsync('highlight')
+au CursorHoldI * sil call CocActionAsync('showSignatureHelp')
 
 call plug#end()
 
@@ -60,6 +46,10 @@ filetype plugin indent on
 if has("autocmd")
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif 
 endif
+
+" clang-format
+map <C-k> :py3f $HOME/.config/nvim/clang-format.py<cr>
+imap <C-k> <c-o>:py3f $HOME/.config/nvim/clang-format.py<cr>
 
 set autoread
 set completeopt=preview,menu

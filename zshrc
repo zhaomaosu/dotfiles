@@ -124,11 +124,5 @@ alias ll='ls -ahlF --color=always'
 # alias vim=nvim
 alias vi='vim'
 
-# set proxy
-# export all_proxy=child-prc.intel.com:913
-# export http_proxy=child-prc.intel.com:913
-# export https_proxy=child-prc.intel.com:913
-# export ftp_proxy=child-prc.intel.com:913
-
 # set default editor
 # export EDITOR=nvim

@@ -1,0 +1,172 @@
+local fn = vim.fn
+
+local install_path = fn.stdpath('data') .. '/site/pack/paqs/start/paq-nvim'
+
+if fn.empty(fn.glob(install_path)) > 0 then
+  fn.system({'git', 'clone', '--depth=1', 'https://github.com/savq/paq-nvim.git', install_path})
+end
+
+require("paq"):setup({
+  verbose=true
+}) {
+  "navarasu/onedark.nvim",
+  "scrooloose/nerdtree",
+  "jackguo380/vim-lsp-cxx-highlight",
+  "neovim/nvim-lspconfig",
+  "hrsh7th/cmp-nvim-lsp",
+  "hrsh7th/cmp-buffer",
+  "hrsh7th/cmp-path",
+  "hrsh7th/cmp-cmdline",
+  "hrsh7th/nvim-cmp",
+  "hrsh7th/cmp-vsnip",
+  "hrsh7th/vim-vsnip",
+  "windwp/nvim-autopairs",
+  "nvim-lualine/lualine.nvim"
+}
+
+vim.cmd 'hi default LspCxxHlGroupEnumConstant ctermfg=176'
+vim.cmd 'hi default LspCxxHlGroupNamespace ctermfg=136'
+vim.cmd 'hi default LspCxxHlGroupMemberVariable ctermfg=81'
+vim.cmd 'hi default LspCxxHlSymFunctionVariable guifg=#26cdca'
+
+-- config onedark them
+vim.g.onedark_style = 'darker'
+require('onedark').setup()
+
+-- config autopairs
+require('nvim-autopairs').setup()
+
+-- config lsp status line
+local function LspStatus()
+  if(not vim.tbl_isempty(vim.lsp.buf_get_clients(0)))
+  then
+    local error_msg = vim.lsp.diagnostic.get_count(vim.fn.bufnr('%'), [[Error]])
+    local warning_msg = vim.lsp.diagnostic.get_count(vim.fn.bufnr('%'), [[Warning]])
+    local info_msg = vim.lsp.diagnostic.get_count(vim.fn.bufnr('%'), [[Hint]])
+    return "lsp x "..error_msg.." ! "..warning_msg.." i "..info_msg
+  end
+  return 'busy'
+end
+
+require('lualine').setup{
+  options = {
+    icons_enabled = false,
+    component_separators = { left = ' ', right = ' '},
+    section_separators = { left = ' ', right = ' '},
+  },
+  sections = {
+    lualine_c = {'filename', LspStatus},
+  },
+}
+
+-- Use an on_attach function to only map the following keys
+-- after the language server attaches to the current buffer
+local on_attach = function(client, bufnr)
+  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+
+  -- Mappings.
+  local opts = { noremap=true, silent=true }
+
+  -- See `:help vim.lsp.*` for documentation on any of the below functions
+  buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+  buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+end
+
+-- Setup nvim-cmp.
+local cmp = require'cmp'
+
+cmp.setup({
+  snippet = {
+    -- REQUIRED - you must specify a snippet engine
+    expand = function(args)
+      vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+      -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+      -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+      -- require'snippy'.expand_snippet(args.body) -- For `snippy` users.
+    end,
+  },
+  mapping = {
+    ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
+    ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+    ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
+    ['<C-y>'] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
+    ['<C-e>'] = cmp.mapping({
+      i = cmp.mapping.abort(),
+      c = cmp.mapping.close(),
+    }),
+    -- Accept currently selected item. If none selected, `select` first item.
+    -- Set `select` to `false` to only confirm explicitly selected items.
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+  },
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'vsnip' }, -- For vsnip users.
+    -- { name = 'luasnip' }, -- For luasnip users.
+    -- { name = 'ultisnips' }, -- For ultisnips users.
+    -- { name = 'snippy' }, -- For snippy users.
+  }, {
+    { name = 'buffer' },
+  })
+})
+
+-- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline('/', {
+  sources = {
+    { name = 'buffer' }
+  }
+})
+
+-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline(':', {
+  sources = cmp.config.sources({
+    { name = 'path' }
+  }, {
+    { name = 'cmdline' }
+  })
+})
+
+-- Setup lspconfig.
+local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+-- ccls config
+require'lspconfig'.ccls.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  flags = {
+    debounce_text_changes = 150;
+  };
+  init_options = {
+    cache = {
+      directory = ".ccls_cache";
+    };
+    highlight = {
+      lsRanges = true;
+    };
+  };
+}
+
+
+-- general config for nvim
+vim.cmd 'map <C-K> :py3f $HOME/.config/nvim/clang-format.py<cr>'
+vim.cmd 'imap <C-K> <c-o>:py3f $HOME/.config/nvim/clang-format.py<cr>'
+
+vim.o.completeopt = 'menu,menuone,noselect'
+vim.o.termguicolors = true
+vim.o.autoread = true
+vim.o.cursorline = true
+vim.o.syntax = 'on'
+vim.o.mouse = 'a'
+vim.o.autoindent = true
+vim.o.cindent = true
+vim.o.tabstop = 4
+vim.o.softtabstop = 2
+vim.o.shiftwidth = 2
+vim.o.modelineexpr = true
+vim.o.expandtab = true
+vim.o.smarttab = true
+vim.o.list = true
+vim.o.number = true

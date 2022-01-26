@@ -24,14 +24,23 @@ require("paq"):setup({
   "nvim-lualine/lualine.nvim"
 }
 
-vim.cmd 'hi default LspCxxHlGroupEnumConstant ctermfg=176'
-vim.cmd 'hi default LspCxxHlGroupNamespace ctermfg=136'
-vim.cmd 'hi default LspCxxHlGroupMemberVariable ctermfg=81'
-vim.cmd 'hi default LspCxxHlSymFunctionVariable guifg=#26cdca'
-
 -- config onedark them
-vim.g.onedark_style = 'darker'
-require('onedark').setup()
+require('onedark').setup {
+  style = 'darker',
+}
+require('onedark').load()
+
+vim.cmd([[
+hi LspCxxHlSymClass guifg=#aa4282
+hi LspCxxHlSymMethod guifg=#a98927
+hi LspCxxHlSymNamespace guifg=#5ba840
+hi LspCxxHlSymStruct guifg=#dd7a86
+hi LspCxxHlSymField guifg=#4dad92
+hi LspCxxHlSymVariable guifg=#57c2cc
+hi LspCxxHlSymParameter guifg=#337495
+hi LspcxxHlSymFunction guifg=#6587cd
+hi LspCxxHlSymEnumMember guifg=#e0caad
+]])
 
 -- config autopairs
 require('nvim-autopairs').setup()
@@ -40,12 +49,9 @@ require('nvim-autopairs').setup()
 local function LspStatus()
   if(not vim.tbl_isempty(vim.lsp.buf_get_clients(0)))
   then
-    local error_msg = vim.lsp.diagnostic.get_count(vim.fn.bufnr('%'), [[Error]])
-    local warning_msg = vim.lsp.diagnostic.get_count(vim.fn.bufnr('%'), [[Warning]])
-    local info_msg = vim.lsp.diagnostic.get_count(vim.fn.bufnr('%'), [[Hint]])
-    return "lsp x "..error_msg.." ! "..warning_msg.." i "..info_msg
+    return "lsp online"
   end
-  return 'busy'
+  return 'lsp offline'
 end
 
 require('lualine').setup{
@@ -149,6 +155,7 @@ require'lspconfig'.ccls.setup {
   };
 }
 
+vim.cmd([[au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif]])
 
 -- general config for nvim
 vim.cmd 'map <C-K> :py3f $HOME/.config/nvim/clang-format.py<cr>'
@@ -170,3 +177,4 @@ vim.o.expandtab = true
 vim.o.smarttab = true
 vim.o.list = true
 vim.o.number = true
+vim.o.relativenumber = true

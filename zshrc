@@ -104,8 +104,18 @@ PS1=$'%{\033[38;5;37m%}%n%{\033[38;5;214m%}@%{\033[38;5;2m%}%M%{\033[38;5;214m%}
 # 次提示符：使用暗色
 PS2=$'%{\033[2m%}%_>%{\033[0m%} '
 
+# vim vicmd/viins 提示
+function zle-line-init zle-keymap-select {
+    RPS1="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
+    RPS2=$RPS1
+    zle reset-prompt
+}
+
+zle -N zle-line-init
+zle -N zle-keymap-select
+
 # set bindkey
-bindkey -e
+bindkey -v
 if [[ -n "$TMUX" ]]; then
     bindkey "^[[1~" beginning-of-line
     bindkey "^[[4~" end-of-line

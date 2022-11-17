@@ -11,7 +11,6 @@ require("paq"):setup({
 }) {
   "navarasu/onedark.nvim",
   "scrooloose/nerdtree",
-  "jackguo380/vim-lsp-cxx-highlight",
   "neovim/nvim-lspconfig",
   "hrsh7th/cmp-nvim-lsp",
   "hrsh7th/cmp-buffer",
@@ -21,6 +20,7 @@ require("paq"):setup({
   "hrsh7th/cmp-vsnip",
   "hrsh7th/vim-vsnip",
   "windwp/nvim-autopairs",
+  {"nvim-treesitter/nvim-treesitter", run=function() vim.cmd "TSUpdate" end},
   "nvim-lualine/lualine.nvim"
 }
 
@@ -29,18 +29,6 @@ require('onedark').setup {
   style = 'darker',
 }
 require('onedark').load()
-
-vim.cmd([[
-hi LspCxxHlSymClass guifg=#aa4282
-hi LspCxxHlSymMethod guifg=#a98927
-hi LspCxxHlSymNamespace guifg=#5ba840
-hi LspCxxHlSymStruct guifg=#dd7a86
-hi LspCxxHlSymField guifg=#4dad92
-hi LspCxxHlSymVariable guifg=#57c2cc
-hi LspCxxHlSymParameter guifg=#337495
-hi LspcxxHlSymFunction guifg=#6587cd
-hi LspCxxHlSymEnumMember guifg=#e0caad
-]])
 
 -- config autopairs
 require('nvim-autopairs').setup()
@@ -97,7 +85,7 @@ cmp.setup({
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm exp    licitly selected items.   
+    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm exp    licitly selected items.
   }),
   sources = cmp.config.sources({
     { name = 'nvim_lsp' },
@@ -132,21 +120,30 @@ cmp.setup.cmdline(':', {
 -- Setup lspconfig.
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
--- ccls config
-require'lspconfig'.ccls.setup {
+-- clangd config
+require'lspconfig'.clangd.setup {
   on_attach = on_attach,
   capabilities = capabilities,
-  flags = {
-    debounce_text_changes = 150;
-  };
-  init_options = {
-    cache = {
-      directory = ".ccls_cache";
-    };
-    highlight = {
-      lsRanges = true;
-    };
-  };
+  cmd = {'clangd', '--clang-tidy=0'},
+}
+
+require'nvim-treesitter.configs'.setup {
+  -- A list of parser names, or "all"
+  ensure_installed = { "c", "lua", "rust" },
+
+  -- Automatically install missing parsers when entering buffer
+  -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+  auto_install = true,
+
+  highlight = {
+    -- `false` will disable the whole extension
+    enable = true,
+    additional_vim_regex_highlighting = false,
+  },
+
+  indent = {
+    enable = true,
+  }
 }
 
 vim.cmd([[au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif]])
@@ -172,3 +169,4 @@ vim.o.smarttab = true
 vim.o.list = true
 vim.o.number = true
 vim.o.relativenumber = true
+vim.o.colorcolumn = "80"

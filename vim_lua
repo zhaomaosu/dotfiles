@@ -14,7 +14,6 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   "navarasu/onedark.nvim",
   "scrooloose/nerdtree",
-  "jackguo380/vim-lsp-cxx-highlight",
   "neovim/nvim-lspconfig",
   "hrsh7th/cmp-nvim-lsp",
   "hrsh7th/cmp-buffer",
@@ -33,18 +32,6 @@ require('onedark').setup {
   style = 'darker',
 }
 require('onedark').load()
-
-vim.cmd([[
-hi LspCxxHlSymClass guifg=#aa4282
-hi LspCxxHlSymMethod guifg=#a98927
-hi LspCxxHlSymNamespace guifg=#5ba840
-hi LspCxxHlSymStruct guifg=#dd7a86
-hi LspCxxHlSymField guifg=#4dad92
-hi LspCxxHlSymVariable guifg=#57c2cc
-hi LspCxxHlSymParameter guifg=#337495
-hi LspcxxHlSymFunction guifg=#6587cd
-hi LspCxxHlSymEnumMember guifg=#e0caad
-]])
 
 -- config autopairs
 require('nvim-autopairs').setup()
@@ -142,18 +129,53 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities()
 require'lspconfig'.ccls.setup {
   on_attach = on_attach,
   capabilities = capabilities,
-  flags = {
-    debounce_text_changes = 150;
-  };
   init_options = {
     cache = {
       directory = ".ccls-cache-vim";
     };
     highlight = {
-      lsRanges = true;
+      rainbow = 10;
     };
   };
 }
+
+local func_colors = {
+  '#e5b124', '#927754', '#eb992c', '#e2bf8f', '#d67c17',
+  '#88651e', '#e4b953', '#a36526', '#b28927', '#d69855',
+}
+local type_colors = {
+  '#e1afc3', '#d533bb', '#9b677f', '#e350b6', '#a04360',
+  '#dd82bc', '#de3864', '#ad3f87', '#dd7a90', '#e0438a',
+}
+local param_colors = {
+  '#e5b124', '#927754', '#eb992c', '#e2bf8f', '#d67c17',
+  '#88651e', '#e4b953', '#a36526', '#b28927', '#d69855',
+}
+local var_colors = {
+  '#429921', '#58c1a4', '#5ec648', '#36815b', '#83c65d',
+  '#419b2f', '#43cc71', '#7eb769', '#58bf89', '#3e9f4a',
+}
+local all_colors = {
+  class = type_colors,
+  constructor = func_colors,
+  enum = type_colors,
+  enumMember = var_colors,
+  field = var_colors,
+  ['function'] = func_colors,
+  method = func_colors,
+  parameter = param_colors,
+  struct = type_colors,
+  typeAlias = type_colors,
+  typeParameter = type_colors,
+  variable = var_colors
+}
+for type, colors in pairs(all_colors) do
+  for i = 1,#colors do
+    for _, lang in pairs({'c', 'cpp'}) do
+      vim.api.nvim_set_hl(0, string.format('@lsp.typemod.%s.id%s.%s', type, i-1, lang), {fg=colors[i]})
+    end
+  end
+end
 
 vim.cmd([[au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif]])
 
